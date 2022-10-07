@@ -342,5 +342,5 @@ class TransationViewSetTest(APITestCase):
         list_transation = create_random_list_transation(list_account)
         url = reverse('transaction-list') + "{}/".format(random.choice(list_transation).id)
         response = self.client.delete(url, {}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 

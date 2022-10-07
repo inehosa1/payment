@@ -92,12 +92,10 @@ class TransationViewSet(viewsets.ModelViewSet):
         "date": ["year", "month"]
     }
 
-    def destroy(self, request, *args, **kwargs):
+    def balance_adjustment_on_delete(self, instance):
         """
-        Eliminacion de una transacion ser retorna el balance anterior
+        Funcion para actualizar el saldo al eliminar una transacion
         """
-        instance = self.get_object()
-        
         instance_account = instance.account
 
         if not instance.income:
@@ -106,6 +104,13 @@ class TransationViewSet(viewsets.ModelViewSet):
             instance_account.balance = instance_account.balance - instance.amount
         
         instance_account.save()
+
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Eliminacion de una transacion ser retorna el balance anterior
+        """
+        instance = self.get_object()
+        self.balance_adjustment_on_delete(instance)
         self.perform_destroy(instance)
-        self.get_object()
         return Response(status=status.HTTP_204_NO_CONTENT)

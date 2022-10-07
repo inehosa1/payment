@@ -136,7 +136,6 @@ class TransferFromAccountToAccount(serializers.Serializer):
         # Creacion y actualizacion multiple para minimizar querys
         AccountModel.objects.bulk_update([from_account, to_account], ['balance'])
         TransactionModel.objects.bulk_create([instance_from_account, instance_to_account])
-
         return True
 
 
