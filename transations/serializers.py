@@ -3,39 +3,37 @@ from transations.models import AccountModel, TransactionModel
 from datetime import datetime
 
 
+
 class AccountSerializer(serializers.ModelSerializer):
     """
     Serializador para la creacion de cuentas de usuario con nombre y balance
     """
     
+    def create_transation(self, validated_data, instance, description, income=True):
+        """
+        Crea las transaciones necesarias a la hora de actualizar y crear una cuenta
+        """
+        TransactionModel.objects.create(
+            amount=validated_data.get("balance"),
+            description=description,
+            income=income,
+            account=instance,
+            date=datetime.now()
+        )
+
     def create(self, validated_data):
         """
         Se sobreescribe para crear transacion con el balance de ajuste manual
         """        
         instance = super().create(validated_data)
-        
-        TransactionModel.objects.create(
-            amount=validated_data.get("balance"),
-            description="balance inicial",
-            income=True,
-            account=instance,
-            date=datetime.now()
-        )
-
+        self.create_transation(validated_data, instance, "balance inicial")
         return instance
     
     def update(self, instance, validated_data):
         """
         Se sobreescribe para crear transacion con el balance de ajuste manual
         """        
-        TransactionModel.objects.create(
-            amount=validated_data.get("balance"),
-            description="ajuste manual",
-            income=True,
-            account=instance,
-            date=datetime.now()
-        )
-
+        self.create_transation(validated_data, instance, "ajuste manual")
         return super().update(instance, validated_data)
 
 
@@ -105,6 +103,18 @@ class TransferFromAccountToAccount(serializers.Serializer):
             raise serializers.ValidationError("El monto a transferir no puede ser mayor a lo que posee el remitente")
         return data
 
+    def instance_transation(self, validated_data, instance, description, income=True):
+        """
+        Crea las transaciones necesarias a la hora de actualizar y crear una cuenta
+        """
+        return TransactionModel(
+            amount=validated_data.get('amount'),
+            description=description,
+            income=income,
+            account=instance,
+            date=datetime.now()
+        )
+
     def create(self, validated_data):
         """
         Se sobreescribe para crear transaciones y descuentos de balance 
@@ -117,27 +127,15 @@ class TransferFromAccountToAccount(serializers.Serializer):
         to_account = validated_data.get("to_account")
         to_account.balance = to_account.balance + validated_data.get('amount')
 
-        transaction_accounts = []
+        instance_from_account = self.instance_transation(
+            validated_data, from_account, "transferencia hacia: {}".format(to_account.name), income=False)
 
-        transaction_accounts.append(TransactionModel(
-            amount=validated_data.get("amount"),
-            description="transferencia hacia: {}".format(to_account.name),
-            income=False,
-            account=from_account,
-            date=datetime.now()
-        ))
-
-        transaction_accounts.append(TransactionModel(
-            amount=validated_data.get("amount"),
-            description="transferencia desde: {}".format(from_account.name),
-            income=True,
-            account=to_account,
-            date=datetime.now()
-        ))
+        instance_to_account = self.instance_transation(
+            validated_data, to_account, "transferencia desde: {}".format(from_account.name))
 
         # Creacion y actualizacion multiple para minimizar querys
         AccountModel.objects.bulk_update([from_account, to_account], ['balance'])
-        TransactionModel.objects.bulk_create(transaction_accounts)
+        TransactionModel.objects.bulk_create([instance_from_account, instance_to_account])
 
         return True
 
