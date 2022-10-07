@@ -142,8 +142,6 @@ class TransferFromAccountToAccount(serializers.Serializer):
         return True
 
 
-
-
 class AccountTransactionSerializer(serializers.ModelSerializer):
     """
     Serializador para consultar las transacciones de la cuenta

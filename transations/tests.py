@@ -28,13 +28,10 @@ def create_random_list_account():
     """
     funcion para crear lista de cuentas random
     """
-    instance_account = []
-    for i in range(100):
-        name = get_random_string(length=32)
-        instance_account.append(AccountModel(
-            name=name,
-            balance=random.randint(1, 389)
-        ))
+    instance_account =[AccountModel(
+        name=get_random_string(length=32),
+        balance=random.randint(1, 389)
+    ) for pos in range(100)]
     return AccountModel.objects.bulk_create(instance_account)
 
 
@@ -42,15 +39,14 @@ def create_random_list_transation(account_list):
     """
     Funcion para crear lista de transaciones random
     """
-    instance_transation = []
-    for i in range(100):
-        instance_transation.append(TransactionModel(
-            amount=random.randint(1, 389),
-            description=get_random_string(length=100),
-            date=random_date(),
-            income=True,
-            account=random.choice(account_list)
-        ))
+    instance_transation = [TransactionModel(
+        amount=random.randint(1, 389),
+        description=get_random_string(length=100),
+        date=random_date(),
+        income=True,
+        account=random.choice(account_list)
+    ) for pos in range(100)]
+
     return TransactionModel.objects.bulk_create(instance_transation)
 
 
