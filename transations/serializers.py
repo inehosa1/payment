@@ -105,7 +105,7 @@ class TransferFromAccountToAccount(serializers.Serializer):
 
     def instance_transation(self, validated_data, instance, description, income=True):
         """
-        Crea las transaciones necesarias a la hora de actualizar y crear una cuenta
+        retorna instancia de transacion
         """
         return TransactionModel(
             amount=validated_data.get('amount'),
