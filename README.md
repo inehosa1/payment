@@ -24,12 +24,16 @@
 ![image](https://user-images.githubusercontent.com/32171195/194444849-1a4cbfb7-bebf-4397-a4af-52ca1da4fb5b.png)
 
 ![image](https://user-images.githubusercontent.com/32171195/194448038-e0c7bffa-f53e-47a7-8965-ed094e8000d8.png)
+## Problema:
+* Aqui tengo un problema y es que nose bien como hacer cuando un serializador que tiene dos instancias iguales las querys sean menores a las presentes nose presenta el error de n+1 pero siempre seran seran 10 consultas en este caso, si fuera un modelserializer bastaria con utilizar select_related.
+* Una solucion seria no guardar las instancias sino solo el id pero con las instancias es mas facil interactuar con el orm 
 ![image](https://user-images.githubusercontent.com/32171195/194448009-9086e119-3ff9-4758-b2bb-975e84e7c36d.png)
 
 
 ## Peticiones GET para TRANSACTION
 ![image](https://user-images.githubusercontent.com/32171195/194445452-9f9a386e-e93d-4c9a-ae8e-67640c74b188.png)
 ![image](https://user-images.githubusercontent.com/32171195/194446262-2f64a953-caae-44d7-bb44-576be0e374f2.png)
+
 
 ![image](https://user-images.githubusercontent.com/32171195/194446312-66faf9d8-c74a-40f4-931c-34a5c79dbe3f.png)
 ![image](https://user-images.githubusercontent.com/32171195/194446329-5e2bf51f-4186-4987-97e5-f2b9ae2c1f73.png)
