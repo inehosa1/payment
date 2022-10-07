@@ -266,10 +266,49 @@ class TransationViewSetTest(APITestCase):
         list_account = create_random_list_account()
         create_random_list_transation(list_account)
 
-        url = reverse('account-list')
+        url = reverse('transaction-list')
         response = self.client.get(url, {}, format='json')        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 100)
+
+    def test_list_transation_filter_account(self):
+        """
+        test para obtener la lista de transaciones filtradas por una cuenta
+        """
+        list_account = create_random_list_account()
+        list_transation = create_random_list_transation(list_account)
+
+        url = reverse('transaction-list')
+        account = random.choice(list_transation).account.id
+        response = self.client.get(url, {"account": account}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)        
+        self.assertEqual(set([i["account"] for i in response.data]), {account})
+    
+    def test_list_transation_filter_year(self):
+        """
+        test para obtener la lista de transaciones filtradas por un año
+        """
+        list_account = create_random_list_account()
+        list_transation = create_random_list_transation(list_account)
+
+        url = reverse('transaction-list')
+        year = random.choice(list_transation).date.year
+        response = self.client.get(url, {"date__year": year}, format='json')        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(set([datetime.strptime(i["date"], "%Y-%m-%d").year for i in response.data]), {year})
+
+    def test_list_transation_filter_month(self):
+        """
+        test para obtener la lista de transaciones filtradas por un mes
+        """
+        list_account = create_random_list_account()
+        list_transation = create_random_list_transation(list_account)
+
+        url = reverse('transaction-list')
+        month = random.choice(list_transation).date.month
+        response = self.client.get(url, {"date__month": month}, format='json')        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(set([datetime.strptime(i["date"], "%Y-%m-%d").month for i in response.data]), {month})
 
     def test_create_deposit_transaction(self):
         """
