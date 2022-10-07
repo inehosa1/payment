@@ -95,6 +95,9 @@ class TransferFromAccountToAccount(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=8, decimal_places=2)
 
     def validate(self, data):
+        """
+        Validaciones a la cuenta para poder transferir el dinero
+        """
         if data.get("from_account") == data.get("to_account"):
             raise serializers.ValidationError("La cuenta de remitente no puede ser igual a la cuenta de destino")
         
@@ -137,6 +140,8 @@ class TransferFromAccountToAccount(serializers.Serializer):
         TransactionModel.objects.bulk_create(transaction_accounts)
 
         return True
+
+
 
 
 class AccountTransactionSerializer(serializers.ModelSerializer):

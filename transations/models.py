@@ -7,7 +7,7 @@ class AccountModel(models.Model):
     """
     Modelo para cuentas
     """
-    name = models.CharField("Nombre de cuenta", max_length=50)
+    name = models.CharField("Nombre de cuenta", max_length=50, unique=True)
     balance =  models.DecimalField("Balance", max_digits=8, decimal_places=2)
 
     def __str__(self):

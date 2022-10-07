@@ -1,6 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
-
-from rest_framework import viewsets, status, mixins
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
@@ -91,6 +89,9 @@ class TransationViewSet(viewsets.ModelViewSet):
     }
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Eliminacion de una transacion ser retorna el balance anterior
+        """
         instance = self.get_object()
         
         instance_account = instance.account
