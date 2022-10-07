@@ -5,18 +5,19 @@ from rest_framework.decorators import action
 from transations.models import AccountModel, TransactionModel
 from transations.serializers import AccountSerializer, TransactionSerializer, AccountTransactionSerializer, TransferFromAccountToAccount
 
-import django_filters
 from django_filters import rest_framework as filters
 
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
+
+from rest_framework import viewsets
 
 
 @method_decorator(name='list', decorator=swagger_auto_schema( 
     operation_description="Listado de cuentas"
 ))
 @method_decorator(name='retrieve', decorator=swagger_auto_schema( 
-    operation_description="Listado de una sola cuenta"
+    operation_description="Consulta de una unica cuenta"
 ))
 @method_decorator(name='create', decorator=swagger_auto_schema( 
     operation_description="Creacion de cuentas"
@@ -38,7 +39,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     Vista para la creación de cuentas con balance inicial
     """
     serializer_class = AccountSerializer
-    queryset = AccountModel.objects.prefetch_related("account_transaction").all()
+    queryset = AccountModel.objects.all()
     http_method_names = ["get", "post", "put", "delete"]
 
     @action(
@@ -68,6 +69,9 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 @method_decorator(name='list', decorator=swagger_auto_schema( 
     operation_description="Listado de transaciones"
+))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema( 
+    operation_description="Consulta de una unica transacion"
 ))
 @method_decorator(name='create', decorator=swagger_auto_schema( 
     operation_description="Creacion de transaciones"
