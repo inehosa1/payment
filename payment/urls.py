@@ -22,18 +22,23 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Rest app para la gestión de pedidos",
+        title="Rest app para la creacion de cuentas y gestion de transaciones",
         default_version='v1',
-        description="""
-        * Agendar un pedido a un conductor en una fecha y hora, y especificar su lugar de recogida (latitud y longitud) y destino. 
-        * Consultar todos los pedidos asignados en un día en específico ordenados por la hora. 
-        * Consultar todos los pedidos de un conductor en un día en específico ordenados por la hora. 
-        * Hacer búsquedas del conductor que esté más cerca de un punto geográfico en una fecha y hora. (Tener en consideración los pedidos ya asignados al conductor).         
+        description="""        
+        * Crear cuentas, especificando un balance inicial y nombre. 
+        * Listar todas las cuentas con sus balances. 
+        * Obtener un detalle de cuenta completo, con monto, id, balance y  con todas sus transacciones ordenadas por fecha. 
+        * Tener un endpoint para crear y eliminar transacciones. Las  transacciones pueden ser ingresos o egresos de dinero en una  cuenta. No tiene que haber endpoint para modificar las  
+        transacciones, solo uno para la creación y otro para la eliminación  de transacciones. 
+        * Crear un endpoint para cambiar el balance de una cuenta,  especificando el balance nuevo como un número. Como si fuera  una operación de ajuste manual. (ver detalle sobre lógica más  abajo) 
+        * Crear endpoint para obtener todas las transacciones de una cuenta  en un mes y año particular. 
+        * Crear un endpoint para hacer un movimiento de dinero de una  cuenta a otra. Este endpoint tiene que disparar la creación de  transacciones (con detalle "movimiento entre cuentas") para reflejar  el cambio de balance entre las dos cuentas. 
+        * Configurar acceso al Admin de django para ver los registros y que el  balance de las cuentas no se pueda editar (readonly o similar).         
         """,
         contact=openapi.Contact(email="chanix1998@gmail.com"),
 
    ),
-   public=True,
+   public=True, 
    permission_classes=[permissions.AllowAny],
 )
 

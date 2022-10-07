@@ -1,47 +1,91 @@
 from django.core.exceptions import ObjectDoesNotExist
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from transations.models import AccountModel, TransactionModel
-from transations.serializers import AccountSerializer, TransactionSerializer, AccountTransactionSerializer
+from transations.serializers import AccountSerializer, TransactionSerializer, AccountTransactionSerializer, TransferFromAccountToAccount
+
+from django_filters.rest_framework import DjangoFilterBackend
+
+from drf_yasg.utils import swagger_auto_schema
+from django.utils.decorators import method_decorator
 
 
-# Create your views here.
+@method_decorator(name='list', decorator=swagger_auto_schema( 
+    operation_description="Listado de cuentas"
+))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema( 
+    operation_description="Listado de una sola cuenta"
+))
+@method_decorator(name='create', decorator=swagger_auto_schema( 
+    operation_description="Creacion de cuentas"
+))
+@method_decorator(name='update', decorator=swagger_auto_schema( 
+    operation_description="Actualizacion de cuentas"
+))
+@method_decorator(name='destroy', decorator=swagger_auto_schema( 
+    operation_description="Eliminacion de cuentas"
+))
+@method_decorator(name='account_transaction_history', decorator=swagger_auto_schema( 
+    operation_description="Detalle de transaciones para una sola cuenta"
+))
+@method_decorator(name='account_transaction_amount', decorator=swagger_auto_schema( 
+    operation_description="Transaciones entre cuentas"
+))
 class AccountViewSet(viewsets.ModelViewSet):
     """
     Vista para la creación de cuentas con balance inicial
     """
     serializer_class = AccountSerializer
     queryset = AccountModel.objects.all()
-    http_method_names = ["get", "post", "put", "delete"]
+    http_method_names = ["get", "post", "put", "delete"]  
+    filter_backends = [DjangoFilterBackend]
 
-    @action(detail=True, methods=["get"], url_name="detail_transations")
-    def detail_transations(self, request, pk=None):
+    @action(
+        detail=True, 
+        methods=["get"],
+        serializer_class=AccountTransactionSerializer, 
+        url_name="account_transaction_history"
+    )
+    def account_transaction_history(self, request, pk=None):
         """
-        Detalle de las transaciones por cuenta
+        Historico de transaciones realizadas en la cuenta
         """
         instance_account = self.get_object()
-        serializer = AccountTransactionSerializer(instance_account, many=False)
+        serializer = self.get_serializer(instance=instance_account)
         return Response(serializer.data)
 
-    # @action(detail=False)
-    # def recent_users(self, request):
-    #     recent_users = User.objects.all().order_by('-last_login')
+    @action(detail=False, methods=["post"], serializer_class=TransferFromAccountToAccount, url_name="account_transaction_amount")
+    def account_transaction_amount(self, request):
+        """
+        Transferencia de dinero hacia otras cuentas
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()        
+        return Response({"message": "transferencia exitosa"})
 
-    #     page = self.paginate_queryset(recent_users)
-    #     if page is not None:
-    #         serializer = self.get_serializer(page, many=True)
-    #         return self.get_paginated_response(serializer.data)
 
-    #     serializer = self.get_serializer(recent_users, many=True)
-    #     return Response(serializer.data)
-
+@method_decorator(name='list', decorator=swagger_auto_schema( 
+    operation_description="Listado de transaciones"
+))
+@method_decorator(name='create', decorator=swagger_auto_schema( 
+    operation_description="Creacion de transaciones"
+))
+@method_decorator(name='destroy', decorator=swagger_auto_schema( 
+    operation_description="Eliminacion de transaciones"
+))
 class TransationViewSet(viewsets.ModelViewSet):
     """
     Vista para la creacion de transaciones
     """
     serializer_class = TransactionSerializer
     queryset = TransactionModel.objects.all()
-    http_method_names = ["post", "delete"]
+    http_method_names = ["get", "post", "delete"]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        "account": ["exact"],
+        "date": ["year", "month"]
+    }
