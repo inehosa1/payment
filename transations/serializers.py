@@ -18,7 +18,8 @@ class AccountSerializer(serializers.ModelSerializer):
             amount=validated_data.get("balance"),
             description="balance inicial",
             income=True,
-            account=instance
+            account=instance,
+            date=datetime.now()
         )
 
         return instance
@@ -31,7 +32,8 @@ class AccountSerializer(serializers.ModelSerializer):
             amount=validated_data.get("balance"),
             description="ajuste manual",
             income=True,
-            account=instance
+            account=instance,
+            date=datetime.now()
         )
 
         return super().update(instance, validated_data)
@@ -119,21 +121,23 @@ class TransferFromAccountToAccount(serializers.Serializer):
             amount=validated_data.get("amount"),
             description="transferencia hacia: {}".format(to_account.name),
             income=False,
-            account=from_account
+            account=from_account,
+            date=datetime.now()
         ))
 
         transaction_accounts.append(TransactionModel(
             amount=validated_data.get("amount"),
             description="transferencia desde: {}".format(from_account.name),
             income=True,
-            account=to_account
+            account=to_account,
+            date=datetime.now()
         ))
 
         # Creacion y actualizacion multiple para minimizar querys
         AccountModel.objects.bulk_update([from_account, to_account], ['balance'])
         TransactionModel.objects.bulk_create(transaction_accounts)
 
-        return validated_data
+        return True
 
 
 class AccountTransactionSerializer(serializers.ModelSerializer):
