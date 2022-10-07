@@ -1,4 +1,4 @@
-## requisitos para que el proyecto funcione
+## Requisitos para que el proyecto funcione
 * python3.8+
 
 ## Instrucciones para correr el proyecto
