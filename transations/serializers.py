@@ -72,7 +72,6 @@ class TransactionSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)        
         instance_account.save()
         return instance 
-
     
     class Meta:
         model = TransactionModel

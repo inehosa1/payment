@@ -89,3 +89,18 @@ class TransationViewSet(viewsets.ModelViewSet):
         "account": ["exact"],
         "date": ["year", "month"]
     }
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        instance_account = instance.account
+
+        if not instance.income:
+            instance_account.balance = instance_account.balance + instance.amount
+        else:
+            instance_account.balance = instance_account.balance - instance.amount
+        
+        instance_account.save()
+        self.perform_destroy(instance)
+        self.get_object()
+        return Response(status=status.HTTP_204_NO_CONTENT)
