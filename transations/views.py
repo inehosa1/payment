@@ -1,6 +1,7 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.exceptions import MethodNotAllowed
 
 from transations.models import AccountModel, TransactionModel
 from transations.serializers import AccountSerializer, TransactionSerializer, AccountTransactionSerializer, TransferFromAccountToAccount
@@ -16,9 +17,7 @@ from rest_framework import viewsets
 @method_decorator(name='list', decorator=swagger_auto_schema( 
     operation_description="Listado de cuentas"
 ))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema( 
-    operation_description="Consulta de una unica cuenta"
-))
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(auto_schema=None))
 @method_decorator(name='create', decorator=swagger_auto_schema( 
     operation_description="Creacion de cuentas"
 ))
@@ -75,8 +74,8 @@ class AccountViewSet(viewsets.ModelViewSet):
 @method_decorator(name='list', decorator=swagger_auto_schema( 
     operation_description="Listado de transaciones"
 ))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema( 
-    operation_description="Consulta de una unica transacion"
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(
+    auto_schema=None
 ))
 @method_decorator(name='create', decorator=swagger_auto_schema( 
     operation_description="Creacion de transaciones"
