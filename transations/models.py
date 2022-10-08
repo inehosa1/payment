@@ -28,6 +28,29 @@ class TransactionModel(models.Model):
     income = models.BooleanField("Tipo de transacion")
     account = models.ForeignKey(AccountModel, on_delete=models.CASCADE, verbose_name="Cuenta de la transacion", related_name='account_transaction')
 
+    def balance_adjustment_on_delete(self, instance):
+        """
+        Funcion para ajustar el saldo cuando se elimine una transacion
+        
+        Args:
+            instance (TransactionModel): instancia de la transaction para obtener la cuenta y ajustar el saldo
+        """
+
+        instance_account = instance.account
+        if not instance.income:
+            instance_account.balance = instance_account.balance + instance.amount
+        else:
+            instance_account.balance = instance_account.balance - instance.amount        
+
+        instance_account.save()
+
+    def delete(self):
+        """
+        Se sobreescribe funcion para ajustar balance
+        """
+        self.balance_adjustment_on_delete(self)
+        super().delete()
+
     class Meta:	
         verbose_name = 'Transacion'
         verbose_name_plural = 'Transaciones'

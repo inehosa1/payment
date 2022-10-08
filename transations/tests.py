@@ -17,27 +17,48 @@ from rest_framework.test import APITestCase
 def random_date(start=datetime.strptime('1/1/2020', '%m/%d/%Y'), end=datetime.strptime('1/1/2023', '%m/%d/%Y')):
     """
     Funcion para generar fecha aleatoria dentro de un rango de fechas
+
+    Args:
+        start (datetime, optional): Fecha de inicio de rango. por defecto: datetime.strptime('1/1/2020', '%m/%d/%Y').
+        end (datetime, optional): Fecha de fin de rango. por defecto: datetime.strptime('1/1/2023', '%m/%d/%Y').
+
+    Returns:
+        datetime: fecha aleatoria generada dentro del rango
     """
+    
     delta = end - start
     int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
     random_second = randrange(int_delta)
     return start + timedelta(seconds=random_second)
 
 
-def create_random_list_account():
+def create_random_list_account(number_records=100):
     """
-    funcion para crear lista de cuentas random
+    Funcion para crear lista de cuentas random
+
+    Args:
+        number_records (int, optional): numero de registros a generar. por defecto: 100.
+
+    Returns:
+        (list, AccountModel): retorna una lista de instancias creadas
     """
     instance_account =[AccountModel(
         name=get_random_string(length=32),
         balance=random.randint(1, 389)
-    ) for pos in range(100)]
+    ) for pos in range(number_records)]
     return AccountModel.objects.bulk_create(instance_account)
 
 
-def create_random_list_transation(account_list):
-    """
+def create_random_list_transation(account_list, number_records=100):
+    """ 
     Funcion para crear lista de transaciones random
+
+    Args:
+        account_list (list, AccountModel): lista de instancias de tipo account list
+        number_records (int, optional): numero de registros a crear. Por defecto: 100.
+
+    Returns:
+        (list, TransactionModel): retorna una lista de instancias creadas 
     """
     instance_transation = [TransactionModel(
         amount=random.randint(1, 389),
@@ -45,7 +66,7 @@ def create_random_list_transation(account_list):
         date=random_date(),
         income=True,
         account=random.choice(account_list)
-    ) for pos in range(100)]
+    ) for pos in range(number_records)]
     return TransactionModel.objects.bulk_create(instance_transation)
 
 

@@ -64,7 +64,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()        
-        return Response({"message": "transferencia exitosa"})
+        return Response({"message": 'transferencia exitosa'})
 
 
 @method_decorator(name='list', decorator=swagger_auto_schema( 
@@ -91,26 +91,3 @@ class TransationViewSet(viewsets.ModelViewSet):
         "account": ["exact"],
         "date": ["year", "month"]
     }
-
-    def balance_adjustment_on_delete(self, instance):
-        """
-        Funcion para actualizar el saldo al eliminar una transacion
-        """
-        instance_account = instance.account
-
-        if not instance.income:
-            instance_account.balance = instance_account.balance + instance.amount
-        else:
-            instance_account.balance = instance_account.balance - instance.amount
-        
-        instance_account.save()
-
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        Eliminacion de una transacion ser retorna el balance anterior
-        """
-        instance = self.get_object()
-        self.balance_adjustment_on_delete(instance)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
