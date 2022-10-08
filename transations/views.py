@@ -27,10 +27,10 @@ from rest_framework import viewsets
 @method_decorator(name='destroy', decorator=swagger_auto_schema( 
     operation_description="Eliminacion de cuentas"
 ))
-@method_decorator(name='account_transaction_history', decorator=swagger_auto_schema( 
+@method_decorator(name='transaction_history', decorator=swagger_auto_schema( 
     operation_description="Detalle de transaciones para una sola cuenta"
 ))
-@method_decorator(name='account_transaction_amount', decorator=swagger_auto_schema( 
+@method_decorator(name='transaction_amount', decorator=swagger_auto_schema( 
     operation_description="Transaciones entre cuentas"
 ))
 class AccountViewSet(viewsets.ModelViewSet):
@@ -45,9 +45,9 @@ class AccountViewSet(viewsets.ModelViewSet):
         detail=True, 
         methods=["get"],
         serializer_class=AccountTransactionSerializer, 
-        url_name="account_transaction_history"
+        url_name="transaction_history"
     )
-    def account_transaction_history(self, request, pk=None):
+    def transaction_history(self, request, pk=None):
         """
         Historico de transaciones realizadas en la cuenta
         """
@@ -59,9 +59,9 @@ class AccountViewSet(viewsets.ModelViewSet):
         detail=False, 
         methods=["post"], 
         serializer_class=TransferFromAccountToAccount, 
-        url_name="account_transaction_amount"
+        url_name="transaction_amount"
     )
-    def account_transaction_amount(self, request):
+    def transaction_amount(self, request):
         """
         Transferencia de dinero hacia otras cuentas
         """

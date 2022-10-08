@@ -216,7 +216,7 @@ class AccountViewSetTest(APITestCase):
         response = self.client.delete(url, {}, format='json')        
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_account_transaction_history(self):
+    def test_transaction_history(self):
         """
         test para verificar que se este creando el balance inicial al crear la cuenta
         """
@@ -226,14 +226,14 @@ class AccountViewSetTest(APITestCase):
             'balance':random.randint(1, 389)
         }
         response = self.client.post(url, data, format='json') 
-        url = reverse('account-list') + "{}/account_transaction_history/".format(response.data["id"])
+        url = reverse('account-list') + "{}/transaction_history/".format(response.data["id"])
         response_transaction_history = self.client.get(url, {}, format='json')  
         self.assertEqual(response_transaction_history.status_code, status.HTTP_200_OK)
         self.assertEqual([key for key in response_transaction_history.data["account_transaction"][0].keys()], ['id', 'amount', 'description', 'date', 'income', 'account'])
         self.assertEqual(response_transaction_history.data["account_transaction"][0]["description"], 'balance inicial')
         self.assertEqual(float(response_transaction_history.data["account_transaction"][0]["amount"]), float(data["balance"]))
 
-    def test_account_transaction_amount(self):
+    def test_transaction_amount(self):
         """
         test para transferir dinero de una cuenta a otra
         """
@@ -257,19 +257,19 @@ class AccountViewSetTest(APITestCase):
         }
 
         # se transfiere el monto
-        url_transfer = reverse('account-list') + "account_transaction_amount/"        
+        url_transfer = reverse('account-list') + "transaction_amount/"        
         response_transfer = self.client.post(url_transfer, send_to_accountdata, format='json')
         self.assertEqual(response_transfer.status_code, status.HTTP_200_OK)
         self.assertEqual(response_transfer.data["message"], 'transferencia exitosa')
 
         # se valida que haya quedado registrada la transferencia en el remitente
-        account_one_url_history = reverse('account-list') + "{}/account_transaction_history/".format(account_one_response.data["id"])
+        account_one_url_history = reverse('account-list') + "{}/transaction_history/".format(account_one_response.data["id"])
         account_one_response_transaction_history = self.client.get(account_one_url_history, {}, format='json')  
         self.assertEqual(account_one_response_transaction_history.status_code, status.HTTP_200_OK)
         self.assertEqual(len(account_one_response_transaction_history.data["account_transaction"]), 2)
         
         # se valida que haya quedado registrada la transferencia en el destino
-        account_two_url_history = reverse('account-list') + "{}/account_transaction_history/".format(account_two_response.data["id"])
+        account_two_url_history = reverse('account-list') + "{}/transaction_history/".format(account_two_response.data["id"])
         account_two_response_transaction_history = self.client.get(account_two_url_history, {}, format='json')  
         self.assertEqual(account_two_response_transaction_history.status_code, status.HTTP_200_OK)
         self.assertEqual(len(account_two_response_transaction_history.data["account_transaction"]), 2)
