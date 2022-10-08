@@ -3,7 +3,6 @@ from transations.models import AccountModel, TransactionModel
 from datetime import datetime
 
 
-
 class AccountSerializer(serializers.ModelSerializer):
     """
     Serializador para la creacion de cuentas de usuario con nombre y balance

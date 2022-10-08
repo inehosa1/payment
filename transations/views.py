@@ -56,7 +56,12 @@ class AccountViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance=instance_account)
         return Response(serializer.data)
 
-    @action(detail=False, methods=["post"], serializer_class=TransferFromAccountToAccount, url_name="account_transaction_amount")
+    @action(
+        detail=False, 
+        methods=["post"], 
+        serializer_class=TransferFromAccountToAccount, 
+        url_name="account_transaction_amount"
+    )
     def account_transaction_amount(self, request):
         """
         Transferencia de dinero hacia otras cuentas
