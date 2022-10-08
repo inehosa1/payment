@@ -8,18 +8,17 @@ class AccountSerializer(serializers.ModelSerializer):
     Serializador para la creacion de cuentas de usuario con nombre y balance
     """
     
-    def create_transation(self, validated_data, instance, description, income=True):
+    def create_transation(self, instance, description, income=True):
         """
         Crear transacion
 
         Args:
-            validated_data (dict): con la data procesada
             instance (AccountModel): con la cuenta a realizar la transacion
             description (str): descripcion para la transacion aplicada
             income (bool, optional): tipo de transacion ingreso/egreso . por defecto True.
         """
         TransactionModel.objects.create(
-            amount=validated_data.get("balance"),
+            amount=instance.balance,
             description=description,
             income=income,
             account=instance,
@@ -31,15 +30,16 @@ class AccountSerializer(serializers.ModelSerializer):
         Se sobreescribe para crear transacion con el balance de ajuste manual
         """        
         instance = super().create(validated_data)
-        self.create_transation(validated_data, instance, "balance inicial")
+        self.create_transation(instance, "balance inicial")
         return instance
     
     def update(self, instance, validated_data):
         """
         Se sobreescribe para crear transacion con el balance de ajuste manual
         """        
-        self.create_transation(validated_data, instance, "ajuste manual")
-        return super().update(instance, validated_data)
+        instance = super().update(instance, validated_data)
+        self.create_transation(instance, "ajuste manual")
+        return instance
 
 
     class Meta:

@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
-
 class AccountModel(models.Model):
     """
     Modelo para cuentas
@@ -22,7 +21,7 @@ class TransactionModel(models.Model):
     Modelo para las transaciones
     """
     amount =  models.DecimalField("Balance", validators=[MinValueValidator(0)], max_digits=8, decimal_places=2)
-    description = models.TextField("Descripcion")
+    description = models.CharField("Descripcion", max_length=50)
     date = models.DateField("Fecha de transacion")
     income = models.BooleanField("Tipo de transacion")
     account = models.ForeignKey(AccountModel, on_delete=models.CASCADE, verbose_name="Cuenta de la transacion", related_name='account_transaction')
@@ -34,8 +33,14 @@ class TransactionModel(models.Model):
         Args:
             instance (TransactionModel): instancia de la transaction para obtener la cuenta y ajustar el saldo
         """
-
         instance_account = instance.account
+
+        if instance.description == 'ajuste manual':
+           penultimate_record = TransactionModel.objects.filter(account_id=instance.account_id)[::-1][1]
+           instance_account.balance = penultimate_record.amount
+           instance_account.save()
+           return 
+
         if not instance.income:
             instance_account.balance = instance_account.balance + instance.amount
         else:
