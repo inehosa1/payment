@@ -61,11 +61,13 @@ class TransactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("El balance a retirar no puede ser mayor al disponible")
         return data
 
-    def create(self, validated_data):
+    def update_account_balance(self, validated_data):
         """
-        Se sobreescribe para crear transacion con el balance de ajuste manual    
+        Funcion para actualizar balance de la cuenta cuando se realiza una transacion
+
+        Args:
+            validated_data (dict): con la data validada
         """
-        # se actualiza el balance si se crea un ingreso o egreso     
         instance_account = validated_data.get("account")
         
         if validated_data.get("income"):
@@ -74,9 +76,14 @@ class TransactionSerializer(serializers.ModelSerializer):
         else:
             validated_data["description"] = "egreso"
             instance_account.balance = instance_account.balance - validated_data.get("amount")
-        
-        instance = super().create(validated_data)        
         instance_account.save()
+
+    def create(self, validated_data):
+        """
+        Se sobreescribe para crear transacion con el balance de ajuste manual    
+        """      
+        instance = super().create(validated_data)        
+        self.update_account_balance(validated_data)
         return instance 
     
     class Meta:
