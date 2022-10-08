@@ -1,7 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.exceptions import MethodNotAllowed
 
 from transations.models import AccountModel, TransactionModel
 from transations.serializers import AccountSerializer, TransactionSerializer, AccountTransactionSerializer, TransferFromAccountToAccount
@@ -10,8 +9,6 @@ from django_filters import rest_framework as filters
 
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-
-from rest_framework import viewsets
 
 
 @method_decorator(name='list', decorator=swagger_auto_schema( 
